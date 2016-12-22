@@ -12,7 +12,7 @@ public class GUI extends JFrame{
 	private final String[][] menuItemNames = {{"New", "Open", "Save", "Save As", "Import", "Export"}, 
 												{"Undo", "Redo", "Cut", "Paste", "Preferences"},
 													{"Keyboard"},
-														{"Transpose"},
+														{"Transpose", "Key"},
 															{""},
 																{"Tutorial"}
 	};
