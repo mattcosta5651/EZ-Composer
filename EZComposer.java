@@ -90,10 +90,13 @@ public class EZComposer implements ActionListener{
 	private void newFile(){
 		boolean open = true; //check if file is open
 		
-		if(open)
-			savePrompt();
-		
-		//New Project
+		if(open){
+			if(savePrompt()){
+				//new project
+			}
+			else
+				return;
+		}
 	}
 	
 	/**
@@ -151,13 +154,20 @@ public class EZComposer implements ActionListener{
 	private void exit(){
 		boolean unsaved = true; //checks for unsaved changes
 		
-		if(unsaved)
-			savePrompt();
-		
-		//close program
+		if(unsaved){
+			if(savePrompt()){
+				//close program
+			}
+			else
+				return;
+		}
 	}
 	
-	private void savePrompt(){
+	/**
+	 * Prompts the user to save changes with a confirm dialog
+	 * @return Returns true if the user wants to continue with the parent action (e.g. New, Exit), false to cancel
+	 * */
+	private boolean savePrompt(){
 		int retval = JOptionPane.showConfirmDialog(gui, 
 			"Would you like to save?", 
 			"Unsaved changes", 
@@ -166,6 +176,8 @@ public class EZComposer implements ActionListener{
 		if(retval == JOptionPane.YES_OPTION) //Saves changes
 			saveAsFile();
 		else if(retval == JOptionPane.CANCEL_OPTION) //Returns, doing nothing
-			return;	
+			return false;	
+		
+		return true;
 	}
 }
