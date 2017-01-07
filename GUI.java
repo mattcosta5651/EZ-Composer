@@ -74,6 +74,12 @@ public class GUI extends JFrame{
 		JPanel panel = new JPanel();		
 		panel.setBackground(Color.blue);
 		
+		panel.setLayout(new BorderLayout());
+		
+		//panel.add(new , Borderlayout.WEST); //clefs and tempo
+		//panel.add(new , BorderLayout.CENTER); //music score
+		//panel.add(new , BorderLayout.SOUTH); //piano
+		
 		
 		return panel;
 	}

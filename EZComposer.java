@@ -31,6 +31,8 @@ import java.io.*;
 
 public class EZComposer implements ActionListener{
 	private GUI gui;
+	private boolean fresh = true; //fresh project, unsaved
+	private boolean saved = false; //default: new files are unsaved
 	
 	public static void main (String args[]) {
 		new EZComposer();
@@ -88,15 +90,17 @@ public class EZComposer implements ActionListener{
 	 * Creates a new EZ Composer project; prompts user if changes are not saved
 	 * */
 	private void newFile(){
-		boolean open = true; //check if file is open
+		boolean open = false; //check if file is open
 		
-		if(open){
-			if(savePrompt()){
-				//new project
-			}
-			else
+		if(open){ //prompts to save, returns if cancelled
+			if(!savePrompt()){
 				return;
+			}
 		}
+		
+		//new project
+		File newFile = new File("Unititled.ezmz");
+		gui.setTitle("EZ Composer - "+newFile.getName());
 	}
 	
 	/**
@@ -124,7 +128,14 @@ public class EZComposer implements ActionListener{
 	 * Saves changes
 	 * */
 	private void saveFile(){
-		
+		if(!saved){
+			if(fresh)
+				saveAsFile(); //needs the save dialog
+			else{
+				//saves changes
+				saved = true;
+			}
+		}
 	}
 	
 	/**
@@ -139,6 +150,8 @@ public class EZComposer implements ActionListener{
 		if(retval == JFileChooser.APPROVE_OPTION){
 			File newFile = new File("blah");//get project name
 		}
+		
+		saved = true;
 	}
 	
 	/**
@@ -152,9 +165,7 @@ public class EZComposer implements ActionListener{
 	 * Exits the program
 	 * */
 	private void exit(){
-		boolean unsaved = true; //checks for unsaved changes
-		
-		if(unsaved){
+		if(!saved){
 			if(savePrompt()){
 				//close program
 			}
