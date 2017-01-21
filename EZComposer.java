@@ -1,5 +1,5 @@
 /*
- * main.java
+ * EZComposer.java
  * 
  * Copyright 2016 Unknown <mattcosta8723@localhost>
  * 
@@ -65,9 +65,9 @@ public class EZComposer implements ActionListener{
 	 * */
 	@Override
 	public void actionPerformed(ActionEvent e){
-		System.out.println("debug");
+System.out.println("debug");
 		String action = e.getActionCommand();
-		System.out.println(action);
+System.out.println(action);
 		
 		//New projects
 		if(action.equals("New"))

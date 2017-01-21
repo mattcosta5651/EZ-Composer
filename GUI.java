@@ -5,6 +5,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+//import jm.gui.*;
 
 public class GUI extends JFrame{
 	private EZComposer composer;
@@ -76,7 +77,7 @@ public class GUI extends JFrame{
 		
 		panel.setLayout(new BorderLayout());
 		
-		//panel.add(new , Borderlayout.WEST); //clefs and tempo
+		//panel.add(new JGrandStave(), Borderlayout.WEST); //clefs and tempo
 		//panel.add(new , BorderLayout.CENTER); //music score
 		//panel.add(new , BorderLayout.SOUTH); //piano
 		
