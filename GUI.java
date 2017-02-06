@@ -5,10 +5,12 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-//import jm.gui.*;
+import jm.gui.cpn.*;
 
 public class GUI extends JFrame{
 	private EZComposer composer;
+	//private Stave stave;
+	
 	/**
 	 * Initializes the Graphical User Interface
 	 * */
@@ -57,6 +59,7 @@ public class GUI extends JFrame{
 				menuItems.get(item).setActionCommand(item); //sets ActionCommand to menu item name
 				menuItems.get(item).addActionListener(composer); //adds ActionListener to menu item
 				menus.get(name).add(item); //adds menu item to appropriate menu
+				menus.get(name).addActionListener(composer);
 			}
 			menuBar.add(menus.get(name));
 			counter++;
@@ -73,15 +76,17 @@ public class GUI extends JFrame{
 	 * */
 	private JPanel buildContentPane(){
 		JPanel panel = new JPanel();		
-		panel.setBackground(Color.blue);
-		
+		panel.setBackground(new Color(72, 140, 250));
+		panel.setOpaque(true);
 		panel.setLayout(new BorderLayout());
 		
-		//panel.add(new JGrandStave(), Borderlayout.WEST); //clefs and tempo
-		//panel.add(new , BorderLayout.CENTER); //music score
+		//stave = new PianoStave();
+		
+		//panel.add(stave, BorderLayout.CENTER); //clefs and tempo
 		//panel.add(new , BorderLayout.SOUTH); //piano
 		
 		
 		return panel;
 	}
+
 }

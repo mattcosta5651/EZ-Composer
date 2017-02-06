@@ -1,22 +1,7 @@
 /*
  * EZComposer.java
  * 
- * Copyright 2016 Unknown <mattcosta8723@localhost>
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * <mattcosta8723@localhost>
  * 
  * 
  */
@@ -31,8 +16,7 @@ import java.io.*;
 
 public class EZComposer implements ActionListener{
 	private GUI gui;
-	private boolean fresh = true; //fresh project, unsaved
-	private boolean saved = false; //default: new files are unsaved
+	private Project project;
 	
 	public static void main (String args[]) {
 		new EZComposer();
@@ -101,6 +85,7 @@ System.out.println(action);
 		//new project
 		File newFile = new File("Unititled.ezmz");
 		gui.setTitle("EZ Composer - "+newFile.getName());
+		project = new Project(); //default constructor; not opening file
 	}
 	
 	/**
@@ -119,8 +104,9 @@ System.out.println(action);
 		int retval = fileChooser.showOpenDialog(gui);
 		
 		if(retval == JFileChooser.APPROVE_OPTION){
-			File project = fileChooser.getSelectedFile();
+			File file = fileChooser.getSelectedFile();
 			//Load project
+			project = new Project(file);
 		}	
 	}
 	
@@ -128,12 +114,12 @@ System.out.println(action);
 	 * Saves changes
 	 * */
 	private void saveFile(){
-		if(!saved){
-			if(fresh)
+		if(!project.checkSaved()){
+			if(project.checkFresh())
 				saveAsFile(); //needs the save dialog
 			else{
 				//saves changes
-				saved = true;
+				project.save();
 			}
 		}
 	}
@@ -151,7 +137,7 @@ System.out.println(action);
 			File newFile = new File("blah");//get project name
 		}
 		
-		saved = true;
+		project.save();
 	}
 	
 	/**
@@ -165,7 +151,7 @@ System.out.println(action);
 	 * Exits the program
 	 * */
 	private void exit(){
-		if(!saved){
+		if(!project.checkSaved()){
 			if(savePrompt()){
 				//close program
 			}
