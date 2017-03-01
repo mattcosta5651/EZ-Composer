@@ -6,17 +6,23 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import jm.gui.cpn.*;
+import jm.gui.sketch.*;
+import jm.JMC;
+import jm.music.data.*;
+import jm.util.*;
+import jm.gui.show.*;
 
-public class GUI extends JFrame{
+public class GUI extends JFrame implements JMC{
 	private EZComposer composer;
-	//private Stave stave;
+	private Stave stave;
 	
 	/**
 	 * Initializes the Graphical User Interface
 	 * */
 	public GUI(EZComposer composer){
 		this.composer = composer;
-		initComponents();
+		GUIFactory factory = new GUIFactory(composer, this);
+		initComponents(factory);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setTitle("EZ Composer");
 		
@@ -27,66 +33,21 @@ public class GUI extends JFrame{
 	/**
 	 * Initializes the components of the frame
 	 * */
-	private void initComponents(){
-		setJMenuBar(buildMenu());
-		setContentPane(buildContentPane());
+	private void initComponents(GUIFactory factory){
+		setJMenuBar(factory.createMenuBar());
+		setContentPane(factory.createContentPane());
 	}
 	
 	/**
-	 * Builds menu bar, menus, and menu items and adds ActionListeners
-	 * @return Returns the completed menu
+	 * Sets the stave
 	 * */
-	private JMenuBar buildMenu(){
-	JMenuBar menuBar = new JMenuBar();
-	Map<String, JMenu> menus = new HashMap<String, JMenu>();;
-	final String[] menuNames = {"File", "Edit", "View", "Composition", "Measure", "Beat", "Tools", "Help"};
-	Map<String, JMenuItem> menuItems = new HashMap<String, JMenuItem>();;
-	final String[][] menuItemNames = {{"New", "Open", "Save", "Save As", "Export", "Exit"},		 			   			 //File 
-												{"Undo", "Redo", "Cut", "Paste", "Preferences"},	  					 //Edit
-													{"Keyboard"},														 //View
-														{"Time Signature", "Tempo", "Clef", "Key Signature"},			 //Composition
-															{"Add", "Remove", "Clean"},									 //Measure
-																{"Tied", "Dynamic"},									 //Beat
-																	{"Transpose", "Chord Assist", "Progression Assist"}, //Tools
-																		{"Tutorial"}									 //Help
-	};		
-		
-		int counter = 0;
-		for(String name : menuNames){
-			menus.put(name, new JMenu(name));
-			for(String item : menuItemNames[counter]){
-				menuItems.put(item, new JMenuItem(item)); //maps menu item
-				menuItems.get(item).setActionCommand(item); //sets ActionCommand to menu item name
-				menuItems.get(item).addActionListener(composer); //adds ActionListener to menu item
-				menus.get(name).add(item); //adds menu item to appropriate menu
-				menus.get(name).addActionListener(composer);
-			}
-			menuBar.add(menus.get(name));
-			counter++;
-		}
-		
-		composer.setKeyboardShortcuts(menuItems);
-		
-		return menuBar;	
+	private void setStave(GUIFactory factory){
+		stave = factory.createStave();
 	}
 	
 	/**
-	 * Builds the content pane and lays out components
-	 * @return Returns the completed panel as a content pane
+	 * Gets the current stave
+	 * @return Returns the current Stave
 	 * */
-	private JPanel buildContentPane(){
-		JPanel panel = new JPanel();		
-		panel.setBackground(new Color(72, 140, 250));
-		panel.setOpaque(true);
-		panel.setLayout(new BorderLayout());
-		
-		//stave = new PianoStave();
-		
-		//panel.add(stave, BorderLayout.CENTER); //clefs and tempo
-		//panel.add(new , BorderLayout.SOUTH); //piano
-		
-		
-		return panel;
-	}
-
+	public Stave getStave(){return stave;}	
 }

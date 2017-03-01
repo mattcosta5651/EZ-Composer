@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.*;
 import jm.music.data.*;
 
 public class Project{
@@ -8,20 +9,24 @@ public class Project{
 	private File file;
 	private Score score;
 	private Part part;
-	private Phrase song;
+	private Phrase phrase;
 	private Note[] notes;
-	
-	
 	
 	public Project(){
 		fresh = true;  //default new projects haven't saved new file
 		saved = false; //default new projects are unsaved
-		part = new Part(jm.DEFAULT_INSTRUMENT);
+		part = new Part(Part.DEFAULT_INSTRUMENT);
+		phrase = new Phrase(0.0);
+		notes = new Note[3];
+		notes[0] = new Note(Note.A); 
+		notes[1] = new Note(Note.C); 
+		notes[2] = new Note(Note.E);
+		readySong();
 	}
 	
 	public Project(Project other){
 		file = other.getFile();
-		song = other.getSong();
+		part = other.getPart();
 	}
 	
 	public Project(File f){
@@ -33,9 +38,16 @@ public class Project{
 		saved = true;
 		fresh = false;
 	}
+	
+	public void readySong(){
+		phrase.addNoteList(notes);
+		part.addPhrase(phrase);
+	}
+	
 	public boolean checkSaved(){return saved;}
 	public boolean checkFresh(){return fresh;}
 	
 	public File getFile(){return file;}
-	public Phrase getSong(){return song;}
+	public Part getPart(){return part;}
+	public Phrase getPhrase(){return phrase;}
 }

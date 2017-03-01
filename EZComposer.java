@@ -1,6 +1,9 @@
 /*
  * EZComposer.java
  * 
+ * Created by Matthew Costa
+ * Implements jMusic 
+ * 
  * <mattcosta8723@localhost>
  * 
  * 
@@ -13,10 +16,12 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import jm.util.*;
 
-public class EZComposer implements ActionListener{
+public class EZComposer{ 
 	private GUI gui;
-	private Project project;
+	ActionBuilder actionBuilder;
+	private Project project = new Project();
 	
 	public static void main (String args[]) {
 		new EZComposer();
@@ -27,7 +32,8 @@ public class EZComposer implements ActionListener{
 	 * */
 	public EZComposer(){
 		gui = new GUI(this);
-		newFile();
+		actionBuilder = new ActionBuilder(this);
+		actionBuilder.getAction("New");
 	}
 	
 	/**
@@ -43,138 +49,22 @@ public class EZComposer implements ActionListener{
 		m.get("Preferences").setMnemonic(KeyEvent.VK_F5);
 		m.get("Preferences").setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 	}
+
+	/**
+	 * Gets the current project
+	 * @return Returns the current project
+	 * */
+	public Project getProject(){return project;}
 	
 	/**
-	 * Implementation of actionPerformed
+	 * Sets the project to a new object
+	 * @param The project to be set
 	 * */
-	@Override
-	public void actionPerformed(ActionEvent e){
-System.out.println("debug");
-		String action = e.getActionCommand();
-System.out.println(action);
-		
-		//New projects
-		if(action.equals("New"))
-			newFile();
-		//Opening projects
-		else if(action.equals("Open"))
-			openFile();
-		else if(action.equals("Save"))
-			saveFile();
-		else if(action.equals("Save As"))
-			saveAsFile();
-		else if(action.equals("Export"))
-			exportFile();
-		else if(action.equals("Exit"))	
-			exit();
-	}
-	
-	//Action Events
-	/**
-	 * Creates a new EZ Composer project; prompts user if changes are not saved
-	 * */
-	private void newFile(){
-		boolean open = false; //check if file is open
-		
-		if(open){ //prompts to save, returns if cancelled
-			if(!savePrompt()){
-				return;
-			}
-		}
-		
-		//new project
-		File newFile = new File("Unititled.ezmz");
-		gui.setTitle("EZ Composer - "+newFile.getName());
-		project = new Project(); //default constructor; not opening file
-	}
+	public void setProject(Project p){project = p;}
 	
 	/**
-	 * Opens file chooser and loads data from selected EZ Project
+	 * Gets the current GUI
+	 * @return Returns the current GUI
 	 * */
-	private void openFile(){
-		//File chooser setup
-		JFileChooser fileChooser = new JFileChooser();
-		
-		fileChooser.setApproveButtonMnemonic(KeyEvent.VK_ENTER);
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setMultiSelectionEnabled(false);
-		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("EZ Project", "ezmz"));
-		
-		//Get file
-		int retval = fileChooser.showOpenDialog(gui);
-		
-		if(retval == JFileChooser.APPROVE_OPTION){
-			File file = fileChooser.getSelectedFile();
-			//Load project
-			project = new Project(file);
-		}	
-	}
-	
-	/**
-	 * Saves changes
-	 * */
-	private void saveFile(){
-		if(!project.checkSaved()){
-			if(project.checkFresh())
-				saveAsFile(); //needs the save dialog
-			else{
-				//saves changes
-				project.save();
-			}
-		}
-	}
-	
-	/**
-	 * Saves changes to new file
-	 * */
-	private void saveAsFile(){
-		JFileChooser saveAs = new JFileChooser();
-		
-		saveAs.setApproveButtonMnemonic(KeyEvent.VK_ENTER);
-		int retval = saveAs.showSaveDialog(gui);
-		
-		if(retval == JFileChooser.APPROVE_OPTION){
-			File newFile = new File("blah");//get project name
-		}
-		
-		project.save();
-	}
-	
-	/**
-	 * Exports data to audio file
-	 * */
-	private void exportFile(){
-		
-	}
-	
-	/**
-	 * Exits the program
-	 * */
-	private void exit(){
-		if(!project.checkSaved()){
-			if(savePrompt()){
-				//close program
-			}
-			else
-				return;
-		}
-	}
-	
-	/**
-	 * Prompts the user to save changes with a confirm dialog
-	 * @return Returns true if the user wants to continue with the parent action (e.g. New, Exit), false to cancel
-	 * */
-	private boolean savePrompt(){
-		int retval = JOptionPane.showConfirmDialog(gui, 
-			"Would you like to save?", 
-			"Unsaved changes", 
-			JOptionPane.YES_NO_CANCEL_OPTION);
-		
-		if(retval == JOptionPane.YES_OPTION) //Saves changes
-			saveAsFile();
-		else if(retval == JOptionPane.CANCEL_OPTION) //Returns, doing nothing
-			return false;	
-		
-		return true;
-	}
+	 public GUI getGUI(){return gui;}
 }
