@@ -39,13 +39,6 @@ public class GUI extends JFrame implements JMC{
 	}
 	
 	/**
-	 * Sets the stave
-	 * */
-	private void setStave(GUIFactory factory){
-		stave = factory.createStave();
-	}
-	
-	/**
 	 * Gets the current stave
 	 * @return Returns the current Stave
 	 * */

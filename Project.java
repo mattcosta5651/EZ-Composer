@@ -18,9 +18,9 @@ public class Project{
 		part = new Part(Part.DEFAULT_INSTRUMENT);
 		phrase = new Phrase(0.0);
 		notes = new Note[3];
-		notes[0] = new Note(Note.A); 
+		/*notes[0] = new Note(Note.A); 
 		notes[1] = new Note(Note.C); 
-		notes[2] = new Note(Note.E);
+		notes[2] = new Note(Note.E);*/
 		readySong();
 	}
 	
@@ -40,7 +40,7 @@ public class Project{
 	}
 	
 	public void readySong(){
-		phrase.addNoteList(notes);
+		//phrase.addNoteList(notes);
 		part.addPhrase(phrase);
 	}
 	

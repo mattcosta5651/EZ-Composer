@@ -8,6 +8,9 @@ import java.io.*;
 import jm.util.*;
 
 public class EditAction extends MenuAction{
+	private Stack<EditAction> undo = new Stack<EditAction>();
+	private Stack<EditAction> redo = new Stack<EditAction>();
+	
 	public EditAction(ActionBuilder builder){
 		super(builder);
 	}
@@ -40,7 +43,7 @@ public class EditAction extends MenuAction{
 			}
 		
 			public void actionPerformed(ActionEvent e){
-			
+				redo.push(undo.pop());
 			}
 		}
 		
@@ -59,7 +62,7 @@ public class EditAction extends MenuAction{
 			}
 		
 			public void actionPerformed(ActionEvent e){
-			
+				undo.push(redo.pop());
 			}
 		}
 		
@@ -121,5 +124,5 @@ public class EditAction extends MenuAction{
 		}
 		
 		return new preferencesAction();
-	}				
+	}			
 }

@@ -20,7 +20,7 @@ import jm.util.*;
 
 public class EZComposer{ 
 	private GUI gui;
-	ActionBuilder actionBuilder;
+	private ActionBuilder actionBuilder;
 	private Project project = new Project();
 	
 	public static void main (String args[]) {

@@ -43,7 +43,7 @@ public class GUIFactory{
 																{"Add", "Remove", "Clean"},									 //Measure
 																	{"Tied", "Dynamic"},									 //Beat
 																		{"Transpose", "Chord Assist", "Progression Assist"}, //Tools
-																			{"Tutorial"}									 //Help
+																			{"Tutorial", "Help"}							 //Help
 		};		
 			
 			int counter = 0;
@@ -79,8 +79,13 @@ public class GUIFactory{
 		top.setOpaque(false);
 		panel.add(top); //top padding
 		
-		panel.add(createStave()); //clefs and score
-		panel.add(createStave());
+		//panel.add(createStave(true)); //clefs and score
+		//panel.add(createStave(false));
+		//panel.add(new NoteEditor(gui));
+		Component compose = new Notate(new Phrase()).getScoreBG();
+		compose.setPreferredSize(new Dimension(1200, 200));
+		panel.add(compose);
+		
 		panel.add(new JPanel()); //piano
 		
 		JPanel bottom = new JPanel();
@@ -94,8 +99,15 @@ public class GUIFactory{
 	 * Builds the stave containing music
 	 * @return Returns the completed stave
 	 * */
-	public Stave createStave(){
-		Stave stave = new PianoStave(composer.getProject().getPhrase());
-		return stave;
+	public Stave createStave(boolean treble){
+		if(treble)
+			return new TrebleStave(composer.getProject().getPhrase());
+		else
+			return new BassStave(composer.getProject().getPhrase());
+		
+	}
+	
+	public Score createScore(){
+		return new Score();
 	}
 }
