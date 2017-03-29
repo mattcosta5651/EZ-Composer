@@ -73,7 +73,7 @@ public class GUIFactory{
 		JPanel panel = new JPanel();		
 		panel.setBackground(new Color(72, 140, 250));
 		panel.setOpaque(true);
-		panel.setLayout(new GridLayout(5, 1));
+		panel.setLayout(new GridLayout(4, 1));
 		
 		JPanel top = new JPanel();
 		top.setOpaque(false);
@@ -82,9 +82,7 @@ public class GUIFactory{
 		//panel.add(createStave(true)); //clefs and score
 		//panel.add(createStave(false));
 		//panel.add(new NoteEditor(gui));
-		Component compose = new Notate(new Phrase()).getScoreBG();
-		compose.setPreferredSize(new Dimension(1200, 200));
-		panel.add(compose);
+		panel.add(new PianoStave());
 		
 		panel.add(new JPanel()); //piano
 		
