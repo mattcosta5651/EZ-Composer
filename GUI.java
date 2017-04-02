@@ -14,15 +14,13 @@ import jm.gui.show.*;
 
 public class GUI extends JFrame implements JMC{
 	private EZComposer composer;
-	private Stave stave;
 	
 	/**
 	 * Initializes the Graphical User Interface
 	 * */
 	public GUI(EZComposer composer){
 		this.composer = composer;
-		GUIFactory factory = new GUIFactory(composer, this);
-		initComponents(factory);
+		initComponents();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setTitle("EZ Composer");
 		
@@ -33,14 +31,14 @@ public class GUI extends JFrame implements JMC{
 	/**
 	 * Initializes the components of the frame
 	 * */
-	private void initComponents(GUIFactory factory){
-		setJMenuBar(factory.createMenuBar());
-		setContentPane(factory.createContentPane());
+	private void initComponents(){
+		setJMenuBar(GUIFactory.getInstance().createMenuBar(composer));
+		setContentPane(GUIFactory.getInstance().createContentPane());
 	}
 	
 	/**
 	 * Gets the current stave
-	 * @return Returns the current Stave
+	 * @return Returns the current Notate
 	 * */
-	public Stave getStave(){return stave;}	
+	public Notate getNotate(){return GUIFactory.getInstance().getNotate();}	
 }

@@ -13,25 +13,32 @@ import jm.util.*;
 import jm.gui.show.*;
 
 public class GUIFactory{
+	//Singleton
+	private static GUIFactory instance;
+	
 	private EZComposer composer;
 	private GUI gui;
 	private ActionBuilder actionBuilder;
+	private Notate notate;
 	private Map<String, JMenu> menus;
 	private Map<String, JMenuItem> menuItems;
 	
-	
-	public GUIFactory(EZComposer composer, GUI gui){
-		this.composer = composer;
-		this.gui = gui;
-		actionBuilder = new ActionBuilder(composer);
+	public static GUIFactory getInstance(){
+		if(instance == null)
+			return new GUIFactory();
+		else
+			return instance;
 	}
+	
+	private GUIFactory(){}
 	
 	/**
 	 * Builds menu bar, menus, and menu items and adds ActionListeners
 	 * @return Returns the completed menu
 	 * */
 	
-	public JMenuBar createMenuBar(){
+	public JMenuBar createMenuBar(EZComposer composer){
+		actionBuilder = new ActionBuilder(composer);
 		JMenuBar menuBar = new JMenuBar();
 		menus = new HashMap<String, JMenu>();
 		final String[] menuNames = {"File", "Edit", "View", "Composition", "Measure", "Beat", "Tools", "Help"};
@@ -57,10 +64,24 @@ public class GUIFactory{
 				counter++;
 			}
 			
-			composer.setKeyboardShortcuts(menuItems);
+			setKeyboardShortcuts(menuItems);
 			
 			return menuBar;			
 	}
+	
+	/**
+	 * Sets basic mnemonic key shortcuts
+	 * */
+	private void setKeyboardShortcuts(Map<String, JMenuItem> m){
+		m.get("New").setMnemonic(KeyEvent.VK_N);
+		m.get("New").setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		m.get("Open").setMnemonic(KeyEvent.VK_O);
+		m.get("Open").setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		m.get("Save").setMnemonic(KeyEvent.VK_S);
+		m.get("Save").setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		m.get("Preferences").setMnemonic(KeyEvent.VK_F5);
+		m.get("Preferences").setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+	}	
 	
 	public Map<String, JMenu> getMenus(){return menus;}
 	public Map<String, JMenuItem> getMenuItems(){return menuItems;}
@@ -73,18 +94,19 @@ public class GUIFactory{
 		JPanel panel = new JPanel();		
 		panel.setBackground(new Color(72, 140, 250));
 		panel.setOpaque(true);
-		panel.setLayout(new GridLayout(4, 1));
+		panel.setLayout(new GridLayout(3, 1));
 		
 		JPanel top = new JPanel();
 		top.setOpaque(false);
 		panel.add(top); //top padding
 		
-		//panel.add(createStave(true)); //clefs and score
-		//panel.add(createStave(false));
-		//panel.add(new NoteEditor(gui));
-		panel.add(new PianoStave());
-		
-		panel.add(new JPanel()); //piano
+		//composition area
+		notate = new Notate();
+		JScrollPane scroll = new JScrollPane(notate);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		scroll.setViewportView(notate);
+		scroll.setAutoscrolls(true);
+		panel.add(scroll);
 		
 		JPanel bottom = new JPanel();
 		bottom.setOpaque(false);
@@ -94,18 +116,7 @@ public class GUIFactory{
 	}
 	
 	/**
-	 * Builds the stave containing music
-	 * @return Returns the completed stave
+	 * 
 	 * */
-	public Stave createStave(boolean treble){
-		if(treble)
-			return new TrebleStave(composer.getProject().getPhrase());
-		else
-			return new BassStave(composer.getProject().getPhrase());
-		
-	}
-	
-	public Score createScore(){
-		return new Score();
-	}
+	 public Notate getNotate(){return notate;}
 }

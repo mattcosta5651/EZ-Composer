@@ -2,11 +2,11 @@ import java.io.*;
 import java.util.*;
 import jm.music.data.*;
 
-public class Project{
+public class Project implements Serializable{
 	private boolean fresh;
 	private boolean saved;
+	private String name;
 	
-	private File file;
 	private Score score;
 	private Part part;
 	private Phrase phrase;
@@ -25,7 +25,6 @@ public class Project{
 	}
 	
 	public Project(Project other){
-		file = other.getFile();
 		part = other.getPart();
 	}
 	
@@ -44,10 +43,11 @@ public class Project{
 		part.addPhrase(phrase);
 	}
 	
+	public void addName(String n){name = n;} 
+	
 	public boolean checkSaved(){return saved;}
 	public boolean checkFresh(){return fresh;}
-	
-	public File getFile(){return file;}
+	public String getName(){return name;}
 	public Part getPart(){return part;}
 	public Phrase getPhrase(){return phrase;}
 }

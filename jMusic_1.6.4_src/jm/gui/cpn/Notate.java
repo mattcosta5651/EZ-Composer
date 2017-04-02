@@ -303,10 +303,10 @@ public class Notate extends JPanel /*implements
         this.setMenuBar(menus);
 */        
         // components
-        scroll = new ScrollPane(1);
+ //       scroll = new ScrollPane(1);
        
-        scroll.getHAdjustable().setUnitIncrement(10);
-        scroll.getVAdjustable().setUnitIncrement(10);
+   //     scroll.getHAdjustable().setUnitIncrement(10);
+    //    scroll.getVAdjustable().setUnitIncrement(10);
                 
  //       scoreBG = new Panel();
  //       layout = new GridBagLayout();
@@ -315,7 +315,7 @@ public class Notate extends JPanel /*implements
  //       constraints = new GridBagConstraints();
 //        setupConstraints();
         
-        scroll.add(this);
+//        scroll.add(this);
 //        this.add(scroll); 
         
         setupArrays();
@@ -337,7 +337,6 @@ public class Notate extends JPanel /*implements
  //       this.show();
  
 		calcHeight();
-		scroll.setSize(500,height);
     }
     
     private void setupArrays() {
@@ -431,7 +430,7 @@ this.add(staveArray[i]);
             totalHeight += staveArray[i].getPanelHeight();
         }
         calcHeight();
-        scroll.setSize(new Dimension(width, totalHeight));
+  //      scroll.setSize(new Dimension(width, totalHeight));
         // check window size against screen
  //       Toolkit tk = Toolkit.getDefaultToolkit();
  //       Dimension d = tk.getScreenSize();

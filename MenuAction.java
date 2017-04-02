@@ -14,5 +14,5 @@ public abstract class MenuAction{
 		this.builder = builder;
 	}
 	
-	public abstract AbstractAction getAction(String action);
+	public abstract AbstractAction getAction(String action) throws Exception;
 }

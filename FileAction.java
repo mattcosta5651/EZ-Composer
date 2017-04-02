@@ -12,7 +12,7 @@ public class FileAction extends MenuAction{
 		super(builder);
 	}
 	
-	public AbstractAction getAction(String action){
+	public AbstractAction getAction(String action) throws Exception{
 		switch(action){
 			case "New":
 				return NewFile();
@@ -33,7 +33,7 @@ public class FileAction extends MenuAction{
 	/**
 	 * Creates a new EZ Composer project; prompts user if changes are not saved
 	 * */
-	public AbstractAction NewFile(){
+	public AbstractAction NewFile() throws IOException{
 		class newFile extends AbstractAction{
 		
 			public newFile(){
@@ -41,12 +41,18 @@ public class FileAction extends MenuAction{
 				setEnabled(true);	
 			}
 		
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent action){
 				boolean open = false; //check if file is open
 				
 				if(open){ //prompts to save, returns if cancelled
-					if(!savePrompt()){
-						return;
+					try{
+						if(savePrompt())
+							System.exit(0);
+						else
+							return;
+						}
+					catch(IOException e){
+						e.printStackTrace();
 					}
 				}
 				
@@ -64,7 +70,7 @@ public class FileAction extends MenuAction{
 	/**
 	 * Opens file chooser and loads data from selected EZ Project
 	 * */
-	public AbstractAction OpenFile(){
+	public AbstractAction OpenFile() throws IOException{
 		class openFile extends AbstractAction{
 			public openFile(){
 				super("Open File");
@@ -97,20 +103,34 @@ public class FileAction extends MenuAction{
 	/**
 	 * Saves changes
 	 * */
-	public AbstractAction SaveFile(){
+	public AbstractAction SaveFile() throws IOException{
 		class saveFile extends AbstractAction{
 			public saveFile(){
 				super("Save");
 				setEnabled(true);
 			}
 			
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent action){
 				if(!builder.getComposer().getProject().checkSaved()){
-					if(builder.getComposer().getProject().checkFresh())
-						SaveAsFile(); //needs the save dialog
+					if(builder.getComposer().getProject().checkFresh()){
+						try{
+							SaveAsFile(); //needs the save dialog
+						}
+						catch(IOException e){
+							e.printStackTrace();
+						}
+					}
 					else{
 						//saves changes
-						builder.getComposer().getProject().save();
+						try{
+							ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(builder.getComposer().getProject().getName()));
+							out.writeObject(builder.getComposer().getProject());	
+							out.close();
+							builder.getComposer().getProject().save();		
+						}
+						catch(IOException e){
+							e.printStackTrace();
+						}
 					}
 				}				
 			}
@@ -122,24 +142,32 @@ public class FileAction extends MenuAction{
 	/**
 	 * Saves changes to new file
 	 * */
-	public AbstractAction SaveAsFile(){
+	public AbstractAction SaveAsFile() throws IOException{
 		class saveAsFile extends AbstractAction{
 			public saveAsFile(){
 				super("Save As");
 				setEnabled(true);
 			}
 			
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent action){
 				JFileChooser saveAs = new JFileChooser();
 				
 				saveAs.setApproveButtonMnemonic(KeyEvent.VK_ENTER);
 				int retval = saveAs.showSaveDialog(builder.getComposer().getGUI());
 				
 				if(retval == JFileChooser.APPROVE_OPTION){
-					File newFile = new File("blah");//get project name
+					try{
+						File newFile = new File(saveAs.getSelectedFile().getName());//get project name
+						ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(newFile.getName()));
+						out.writeObject(builder.getComposer().getProject());	
+						out.close();
+						builder.getComposer().getProject().save();
+						builder.getComposer().getProject().addName(newFile.getName());
+					}
+					catch(IOException e){
+						e.printStackTrace();
+					}						
 				}
-				
-				builder.getComposer().getProject().save();				
 			}
 		}
 		
@@ -149,7 +177,7 @@ public class FileAction extends MenuAction{
 	/**
 	 * Exports data to audio file
 	 * */
-	public AbstractAction ExportFile(){
+	public AbstractAction ExportFile() throws IOException{
 		class exportFile extends AbstractAction{
 			public exportFile(){
 				super("Export");
@@ -167,7 +195,7 @@ public class FileAction extends MenuAction{
 	/**
 	 * Exits the program
 	 * */
-	public AbstractAction Exit(){
+	public AbstractAction Exit() throws IOException{
 		class exit extends AbstractAction{
 			public exit(){
 				super("Exit");
@@ -175,12 +203,17 @@ public class FileAction extends MenuAction{
 			}
 		
 		
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent action){
 				if(!builder.getComposer().getProject().checkSaved()){
-					if(savePrompt())
-						System.exit(0);
-					else
-						return;
+					try{
+						if(savePrompt())
+							System.exit(0);
+						else
+							return;
+						}
+					catch(IOException e){
+						e.printStackTrace();
+					}
 				}			
 			}
 		}
@@ -191,17 +224,23 @@ public class FileAction extends MenuAction{
 	 * Prompts the user to save changes with a confirm dialog
 	 * @return Returns true if the user wants to continue with the parent action (e.g. New, Exit), false to cancel
 	 * */
-	private boolean savePrompt(){
-		int retval = JOptionPane.showConfirmDialog(builder.getComposer().getGUI(), 
-			"Would you like to save?", 
-			"Unsaved changes", 
-			JOptionPane.YES_NO_CANCEL_OPTION);
-		
-		if(retval == JOptionPane.YES_OPTION) //Saves changes
-			SaveAsFile();
-		else if(retval == JOptionPane.CANCEL_OPTION) //Returns, doing nothing
-			return false;	
-		
-		return true;
+	private boolean savePrompt() throws IOException{
+		try{
+			int retval = JOptionPane.showConfirmDialog(builder.getComposer().getGUI(), 
+				"Would you like to save?", 
+				"Unsaved changes", 
+				JOptionPane.YES_NO_CANCEL_OPTION);
+			
+			if(retval == JOptionPane.YES_OPTION) //Saves changes
+				SaveAsFile();
+			else if(retval == JOptionPane.CANCEL_OPTION) //Returns, doing nothing
+				return false;	
+			
+			return true;
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		return false;
 	}	
 }
