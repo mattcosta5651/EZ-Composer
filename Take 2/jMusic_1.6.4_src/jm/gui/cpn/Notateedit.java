@@ -91,9 +91,6 @@ public class Notate extends Frame implements
     private boolean     zoomed;
     private Phrase      beforeZoom = new Phrase();
     private Phrase      afterZoom = new Phrase();
-    /* The height of the notate window */
-    private int height = 0;
-    private int width = 700;
 
     public Notate() {
         this(new Phrase(), 0, 0);
@@ -135,6 +132,49 @@ public class Notate extends Frame implements
     
     public void init() {
         addWindowListener(this);
+
+        this.setMenuBar(createMenuBar());
+        
+        // components
+        scroll = new ScrollPane(1);
+       
+        scroll.getHAdjustable().setUnitIncrement(10);
+        scroll.getVAdjustable().setUnitIncrement(10);
+                
+        scoreBG = new Panel();
+        layout = new GridBagLayout();
+        scoreBG.setLayout(layout); //new GridLayout(score.size(), 1));
+        constraints = new GridBagConstraints();
+        setupConstraints();
+        
+        scroll.add(scoreBG);
+        this.add(scroll); 
+        
+        setupArrays();
+        makeGrandStave();
+
+		setupAndShow();
+    }
+    
+    protected void setupAndShow(){
+             
+        this.pack();
+        this.setLocation(locationX, locationY);
+       // calcHeight();
+        //this.setSize(width, height + 40);
+        /*
+        // check window size against screen
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        Dimension d = tk.getScreenSize();
+        if(scroll.getSize().height > d.height) {
+            System.out.println("Adjusting height");
+            scroll.setSize(new Dimension(this.width, d.height));
+        }
+        */
+        this.show();		
+	}
+    
+    protected MenuBar createMenuBar(){
         // menus
         MenuBar menus = new MenuBar();
         Menu edit  = new Menu("File", true);
@@ -150,18 +190,6 @@ public class Notate extends Frame implements
         open = new MenuItem("Open MIDI file...", new MenuShortcut(KeyEvent.VK_O));
         open.addActionListener(this);
         edit.add(open);
-        //------
-        openJmXml = new MenuItem("Open jMusic XML file...");
-        openJmXml.addActionListener(this);
-        edit.add(openJmXml);
-        //------
-        openjm = new MenuItem("Open jm file..");
-        openjm.addActionListener(this);
-        edit.add(openjm);
-        //------
-        close = new MenuItem("Close", new MenuShortcut(KeyEvent.VK_W));
-        close.addActionListener(this);
-        edit.add(close);
         //------
         edit.add("-");
         delete = new MenuItem("Delete last note", new MenuShortcut(KeyEvent.VK_D));
@@ -187,29 +215,7 @@ public class Notate extends Frame implements
         saveMidi = new MenuItem("Save as a MIDI file...", new MenuShortcut(KeyEvent.VK_S));
         saveMidi.addActionListener(this);
         edit.add(saveMidi);
-        //------
-        saveJmXml = new MenuItem("Save as a jMusic XML file...", new MenuShortcut(KeyEvent.VK_S, true));
-        saveJmXml.addActionListener(this);
-        edit.add(saveJmXml);
-        //------
-        saveJM = new MenuItem("Save as a jm file...");
-        saveJM.addActionListener(this);
-        edit.add(saveJM);
 
-        //------
-        edit.add("-");
-        //-Features Added by Al C -----
-
-        //------     
-        /*  
-        insertMidiFile = new MenuItem("Insert a MIDI file..." );
-        insertMidiFile.addActionListener(this);
-        features.add(insertMidiFile);
-
-        appendMidiFile = new MenuItem("Append a MIDI file..." );
-        appendMidiFile.addActionListener(this);
-        features.add(appendMidiFile);
-        */
         setParameters = new MenuItem("Set Parameters..." );
         setParameters.addActionListener(this);
         features.add(setParameters);
@@ -246,28 +252,6 @@ public class Notate extends Frame implements
         stopPlay.addActionListener(this);
         player.add(stopPlay);
         
-        //earTrain = new MenuItem("Ear Train" );
-        //earTrain.addActionListener(this);
-        //player.add(earTrain);
-
-        Menu staveMenu = new Menu( "Stave");
-        edit.add(staveMenu);
-        trebleStave = new MenuItem("Treble");
-        trebleStave.addActionListener(this);
-        staveMenu.add(trebleStave);
-        bassStave = new MenuItem("Bass");
-        bassStave.addActionListener(this);
-        staveMenu.add(bassStave);
-        pianoStave = new MenuItem("Piano");
-        pianoStave.addActionListener(this);
-        staveMenu.add(pianoStave);
-        grandStave = new MenuItem("Grand");
-        grandStave.addActionListener(this);
-        staveMenu.add(grandStave);
-        automaticStave = new MenuItem("Automatic");
-        automaticStave.addActionListener(this);
-        staveMenu.add(automaticStave);
-        
         //------
         edit.add("-");
         
@@ -288,51 +272,15 @@ public class Notate extends Frame implements
         barNumbers = new MenuItem("Bar Numbers", new MenuShortcut(KeyEvent.VK_B));
         barNumbers.addActionListener(this);
         view.add(barNumbers);
-        
-        viewTitle = new MenuItem("Stave Title");
-        viewTitle.addActionListener(this);
-        view.add(viewTitle);
 
         //-------
         menus.add(edit);
         menus.add(features);
         menus.add(player);
         menus.add(view);
-        this.setMenuBar(menus);
         
-        // components
-        scroll = new ScrollPane(1);
-       
-        scroll.getHAdjustable().setUnitIncrement(10);
-        scroll.getVAdjustable().setUnitIncrement(10);
-                
-        scoreBG = new Panel();
-        layout = new GridBagLayout();
-        scoreBG.setLayout(layout); //new GridLayout(score.size(), 1));
-        constraints = new GridBagConstraints();
-        setupConstraints();
-        
-        scroll.add(scoreBG);
-        this.add(scroll); 
-        
-        setupArrays();
-        makeAppropriateStaves();
-               
-        this.pack();
-        this.setLocation(locationX, locationY);
-       // calcHeight();
-        //this.setSize(width, height + 40);
-        /*
-        // check window size against screen
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        Dimension d = tk.getScreenSize();
-        if(scroll.getSize().height > d.height) {
-            System.out.println("Adjusting height");
-            scroll.setSize(new Dimension(this.width, d.height));
-        }
-        */
-        this.show();
-    }
+        return menus;		
+	}
     
     private void setupArrays() {
         // set up arrays
@@ -359,14 +307,6 @@ public class Notate extends Frame implements
         constraints.fill = GridBagConstraints.BOTH;
     }
     
-    private void calcHeight() {
-        // work out the height
-        height = 0;
-        for (int i=0; i<staveArray.length; i++) {
-            height += staveArray[i].getSize().height;
-        }
-
-    }
     
     private void makeAppropriateStaves(){
         Stave[] tempStaveArray  = new Stave[staveArray.length];
@@ -422,13 +362,6 @@ public class Notate extends Frame implements
             gridyVal += gridheightVal;
             totalHeight += staveArray[i].getPanelHeight();
         }
-        //calcHeight();
-        scroll.setSize(new Dimension(width, totalHeight));
-        // check window size against screen
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        Dimension d = tk.getScreenSize();
-        this.setSize(new Dimension(this.width, Math.min(d.height-40, totalHeight+40)));
-        //this.setResizable(true);
         this.pack();
     }        
 
@@ -439,25 +372,6 @@ public class Notate extends Frame implements
         }
         updateAllStaves(tempStaveArray);
     }
-        /*
-            // store current phrase
-            phrase = stave.getPhrase().copy();
-            int tempKey = stave.getKeySignature();
-            double tempTime = stave.getMetre();
-            boolean tempBarNumbers = stave.getBarNumbers();
-            // create new stave panel
-            stave = new BassStave();
-            scoreBG.removeAll();
-            scoreBG.add(stave);
-            scroll.setSize(width, stave.getSize().height + 20);
-            this.pack();
-            // replace stave
-            stave.setPhrase(phrase);
-            stave.setKeySignature(tempKey);
-            stave.setMetre(tempTime);
-            stave.setBarNumbers(tempBarNumbers);
-    }
-    */
     
     private void makePianoStave() {
         Stave[] tempStaveArray  = new Stave[score.size()];
@@ -467,25 +381,6 @@ public class Notate extends Frame implements
         updateAllStaves(tempStaveArray);
     }
     
-    /*
-            // store current phrase
-            phrase = stave.getPhrase().copy();
-            int tempKey = stave.getKeySignature();
-            double tempTime = stave.getMetre();
-            boolean tempBarNumbers = stave.getBarNumbers();
-            // create new stave panel
-            stave = new PianoStave();
-            scoreBG.removeAll();
-            scoreBG.add(stave);
-            scroll.setSize(width, stave.getSize().height + 20);
-            this.pack();
-            // replace stave
-            stave.setPhrase(phrase);
-            stave.setKeySignature(tempKey);
-            stave.setMetre(tempTime);
-            stave.setBarNumbers(tempBarNumbers);
-    }    
-    */
         
     private void makeGrandStave() {
         Stave[] tempStaveArray  = new Stave[score.size()];
@@ -495,25 +390,6 @@ public class Notate extends Frame implements
         updateAllStaves(tempStaveArray);
     }
     
-    /*
-            // store current phrase
-            phrase = stave.getPhrase().copy();
-            int tempKey = stave.getKeySignature();
-            double tempTime = stave.getMetre();
-            boolean tempBarNumbers = stave.getBarNumbers();
-            // create new stave panel
-            stave = new GrandStave();
-            scoreBG.removeAll();
-            scoreBG.add(stave);
-            scroll.setSize(width, stave.getSize().height + 20);
-            this.pack();
-            // replace stave
-            stave.setPhrase(phrase);
-            stave.setKeySignature(tempKey);
-            stave.setMetre(tempTime);
-            stave.setBarNumbers(tempBarNumbers);
-    }       
-    */ 
 
     class PlayRepeater extends Thread {
         
@@ -543,10 +419,6 @@ public class Notate extends Frame implements
         else
         if(e.getSource() == open) openMidi();
         else
-        if(e.getSource() == openjm) openJM();
-        else
-        if(e.getSource() == openJmXml) openJMXML();
-        else
         if(e.getSource() == keySig) {
             for(int i=0; i<staveArray.length; i++) {
                 if(staveArray[i].getKeySignature() == 0) {
@@ -570,10 +442,6 @@ public class Notate extends Frame implements
                 }
             }
         }
-        else
-        if(e.getSource() == saveJM) saveJM();
-        else
-        if(e.getSource() == saveJmXml) saveJMXML();
         else
         if(e.getSource() == saveMidi) saveMidi();
         else
@@ -635,37 +503,7 @@ public class Notate extends Frame implements
             }
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
-        /*
-        else
-        if(e.getSource() == insertMidiFile) { }
-        
-            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            Phrase savePhrase = phrase;
-        	phrase = readMidiPhrase();
-            phrase.addNoteList(
-                savePhrase.getNoteList(),
-                true
-            );        
-            stave.setPhrase(phrase);
-            for(int i=0; i<staveArray.length; i++) {
-                staveArray[i].repaint();
-            }
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        }
-        
-        else
-        if(e.getSource() == appendMidiFile) { }
-        
-            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            phrase.addNoteList(
-                readMidiPhrase().getNoteList(),
-                true
-            );        
-            stave.setPhrase(phrase);
-            stave.repaint();
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        }
-        */
+
         else if(e.getSource() == setParameters) { // only works on the top stave
             ParmScreen parmScreen = new ParmScreen(this);
             //for(int i=0; i<staveArray.length; i++) {
@@ -773,44 +611,10 @@ public class Notate extends Frame implements
         this.score = score;
         // set up arrays
         setupArrays();        
-        makeAppropriateStaves();
+        makeGrandStave();
     }
-    
-    /**
-     * Dialog to import a jm file
-     */
-     
-     public void openJM() {
-        FileDialog loadjm = new FileDialog(this, "Select a jm score file.", FileDialog.LOAD);
-        loadjm.setDirectory( lastDirectory );
-        loadjm.show();
-        String fileName = loadjm.getFile();
-        if (fileName != null) {
-            Score s = new Score();
-            lastDirectory = loadjm.getDirectory();  
-            Read.jm(s, lastDirectory + fileName);
-            setNewScore(s);
-        }
-    }
-    
-    /**
-     * Dialog to import a jm XML file
-     */
-     
-     public void openJMXML() {
-        FileDialog loadjmxml = new FileDialog(this, "Select a jMusic XML score file.", FileDialog.LOAD);
-        loadjmxml.setDirectory( lastDirectory );
-        loadjmxml.show();
-        String fileName = loadjmxml.getFile();
-        if (fileName != null) {
-            Score s = new Score();
-            lastDirectory = loadjmxml.getDirectory(); 
-            Read.xml(s, lastDirectory + fileName);
-            setNewScore(s);
-        }
-    }
-    
 
+    
     
     /**
      * Dialog to save phrase as a MIDI file.
@@ -843,32 +647,7 @@ public class Notate extends Frame implements
                                               
         }
     }
-    
-    /**
-     * Dialog to save score as a jMusic serialized jm file.
-     */
-    public void saveJM() {
-        FileDialog fd = new FileDialog(this, "Save as a jm file...",FileDialog.SAVE);
-                fd.show();
-                            
-        //write a MIDI file to disk
-        if ( fd.getFile() != null) {
-            Write.jm(score, fd.getDirectory()+fd.getFile());
-        }
-    }
-    
-    /**
-     * Dialog to save score as a jMusic XML file.
-     */
-    public void saveJMXML() {
-        FileDialog fd = new FileDialog(this, "Save as a jMusic XML file...",FileDialog.SAVE);
-                fd.show();
-                            
-        //write an XML file to disk
-        if ( fd.getFile() != null) {
-            Write.xml(score, fd.getDirectory()+fd.getFile());
-        }
-    }
+
 
     
     /**
