@@ -22,7 +22,6 @@ public class GUI extends Notate{
 		this.composer = composer;
 		setTitle("EZ Composer");
 		
-		setSize(1200, 800);	
 		setVisible(true);	
 	}
 	
